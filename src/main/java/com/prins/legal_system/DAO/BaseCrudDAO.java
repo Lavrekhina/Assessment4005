@@ -113,7 +113,7 @@ public abstract class BaseCrudDAO<T, U> {
      */
     public T insert(T entity) throws SQLException {
         var stmt = DBWorker.getInstance().getConnection().createStatement();
-        stmt.execute(String.format(INSERT_QUERY, tableName(), toInsertColumns(entity), toInsertValue(entity)));
+        stmt.execute(String.format(INSERT_QUERY, tableName(), toInsertColumns(), toInsertValue(entity)));
 
         var result = getById(toIdValue(stmt.getGeneratedKeys()));
         stmt.close();
@@ -164,10 +164,9 @@ public abstract class BaseCrudDAO<T, U> {
     /**
      * Generates the column names part of the INSERT statement for the given entity.
      *
-     * @param t the entity to insert
      * @return the column names string (e.g., "(col1, col2)")
      */
-    protected abstract String toInsertColumns(T t);
+    protected abstract String toInsertColumns();
 
     /**
      * Generates the WHERE clause condition to filter by ID.

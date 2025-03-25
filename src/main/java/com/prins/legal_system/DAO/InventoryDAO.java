@@ -26,7 +26,7 @@ public class InventoryDAO extends BaseCrudDAO<Inventory, Integer> {
     }
 
     @Override
-    protected String toInsertColumns(Inventory inventory) {
+    protected String toInsertColumns() {
         return String.format("(%s, %s, '%s')", "item_name", "item_quantity", "item_location");
     }
 

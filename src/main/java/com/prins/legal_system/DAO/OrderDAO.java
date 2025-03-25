@@ -33,7 +33,7 @@ public class OrderDAO extends BaseCrudDAO<Order, Integer> {
      }
 
     @Override
-    protected String toInsertColumns(Order order) {
+    protected String toInsertColumns() {
        return String.format("('%s', '%s', '%s')", "order_date", "customer_name", "order_status"); 
     }
 
