@@ -5,18 +5,28 @@ import com.prins.legal_system.exceptions.DBException;
 import java.io.*;
 import java.nio.file.Files;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 
 public class DBWorker {
     private static final DBWorker instance = new DBWorker();
     private static final String DROP_ALL_SQL = "select 'drop table ' || name || ';' from sqlite_master where type = 'table';";
+
     private final Properties properties;
 
     private Connection connection;
 
     private DBWorker() {
         properties = loadProperties();
+        System.out.println("Database properties loaded");
+        System.out.println("Database initializing");
+        try {
+            initialize();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Database initialized");
     }
 
     public static DBWorker getInstance() {
@@ -38,6 +48,7 @@ public class DBWorker {
         }
         return connection;
     }
+
     public void closeConnection() {
         if (connection != null) {
             try {
@@ -48,9 +59,10 @@ public class DBWorker {
 
         }
     }
+
     public void resetDB() throws IOException, SQLException {
         File sqlFolder = new File("sql");
-        if(!sqlFolder.exists()){
+        if (!sqlFolder.exists()) {
             throw new RuntimeException("sql folder does not exist");
         }
 
@@ -70,6 +82,7 @@ public class DBWorker {
 
         conn.close();
     }
+
     public void clearDB() throws SQLException {
         var conn = getConnection();
         var dropStatement = conn.createStatement();
@@ -93,5 +106,21 @@ public class DBWorker {
         }
     }
 
+    private void initialize() throws SQLException {
+        var conn = getConnection();
+        var stmt = conn.createStatement().executeQuery("select name from sqlite_master where type = 'table'");
+        var tables = new ArrayList<String>();
+        while (stmt.next()) {
+            tables.add(stmt.getString(1));
+        }
 
+        if (tables.stream().noneMatch(t -> t.equalsIgnoreCase("inventory") || t.equalsIgnoreCase("orders") || t.equalsIgnoreCase("shipments"))) {
+            try {
+                resetDB();
+            } catch (IOException e) {
+                System.out.println("Error DB initialization");
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

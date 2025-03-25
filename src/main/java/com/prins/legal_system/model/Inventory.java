@@ -1,5 +1,7 @@
 package com.prins.legal_system.model;
 
+import utils.StringUtils;
+
 public class Inventory {
     private Integer id;
     private String name;
@@ -52,5 +54,10 @@ public class Inventory {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("ID: %s Name: %s Location: %s Quantity: %s", StringUtils.fillTo(String.valueOf(id), 15), StringUtils.fillTo(name, 15), StringUtils.fillTo(location, 15), StringUtils.fillTo(String.valueOf(quantity), 15));
     }
 }

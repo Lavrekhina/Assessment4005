@@ -45,5 +45,37 @@ public class OrderDAOTest {
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
+    
+    @Test
+    void shouldSuccessfullyFilterOrder() throws SQLException {
+        dao.insert(new Order("A", "2024-04-01", "London"));
+        var check = dao.insert(new Order("A2", "2024-04-05", "London2"));
+        dao.insert(new Order("A3", "2024-04-10", "London3"));
 
+
+        var result = dao.getAll("item_name = 'A2'");
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        var saveEntity = result.get(0);
+        assertEquals("A2", saveEntity.getDate());
+        assertEquals(check.getId(), saveEntity.getId());
+    }
+
+    @Test
+    void shouldSuccessfullyDelete() throws SQLException {
+        dao.insert(new Order("A", "2024-04-01", "London"));
+        dao.insert(new Order("A2", "2024-04-05", "London2"));
+        dao.insert(new Order("A3", "2024-04-10", "London3"));
+
+
+        var result = dao.getAll();
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+
+        dao.deleteById(result.get(0).getId());
+
+        var resultAfterDelete = dao.getAll();
+        assertTrue(result.size() - resultAfterDelete.size() > 0);
+    }
 }
