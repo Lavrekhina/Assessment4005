@@ -5,8 +5,10 @@
 package com.prins.legal_system;
 import com.prins.legal_system.DAO.InventoryDAO;
 import com.prins.legal_system.DAO.OrderDAO;
+import com.prins.legal_system.DAO.ShipmentDAO;
 import com.prins.legal_system.model.Inventory;
 import com.prins.legal_system.model.Order;
+import com.prins.legal_system.model.Shipment;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -19,6 +21,7 @@ public class ConsoleApp {
     private static final Scanner scanner = new Scanner(System.in).useDelimiter("\\n");
     private static final InventoryDAO inventoryDAO = new InventoryDAO();
     private static final OrderDAO orderDAO = new OrderDAO();
+    private static final ShipmentDAO shipmentDAO = new ShipmentDAO();
     private static final String DATE_FORMAT = "YYYY-MM-dd";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
@@ -38,7 +41,8 @@ public class ConsoleApp {
                     break;
                 case 2: processOrders(); 
                     break;
-//                case 3: trackShipments(); break;
+                case 3: trackShipments(); 
+                    break;
                 case 4:
                     System.out.println("Exiting application. Goodbye!");
                     return;
@@ -100,6 +104,60 @@ public class ConsoleApp {
         }
 
     }
+    
+    private static void trackShipments() throws SQLException {
+    while (true) {
+            System.out.println("\nManage Shipments:");
+            System.out.println("1. Add Shipment");
+            System.out.println("2. View Shipment");
+            System.out.println("3. Delete Shipment");
+            System.out.println("4. Back to Main Menu");
+            System.out.print("Select an option: ");
+
+            int choice = getIntInput();
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter shipment destination: ");
+                    String destination = scanner.next();
+                    System.out.print("Enter shipment date: ");
+                    String date = getDateString();
+                    System.out.print("Enter delivery status: ");
+                    String deliveryStatus = scanner.next();
+                    shipmentDAO.insert(new Shipment(destination, date, deliveryStatus));
+                    System.out.println("Shipment added successfully.");
+                    break;
+                case 2:
+                    System.out.println("Current Shipments:");
+                    showFullShipments();
+                    break;
+                case 3:
+                    System.out.println("Current Shipments:");
+                    showFullShipments();
+                    System.out.print("Enter Shipment ID: ");
+                    int id = getIntInput();
+                    orderDAO.deleteById(id);
+                    System.out.println("Shipment deleted successfully.");
+                    showFullShipments();
+                case 4:
+                    return;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        } 
+    }
+    
+    private static void showFullShipments() throws SQLException {
+        var all = shipmentDAO.getAll();
+        if (all.isEmpty()) {
+            System.out.println("Shipment is empty.");
+        } else {
+            shipmentDAO.getAll().forEach(order -> {
+                System.out.println(order.toString());
+            });
+        }
+    }
+    
+    
     
     private static void processOrders() throws SQLException {
        while (true) {

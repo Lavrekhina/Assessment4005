@@ -17,9 +17,9 @@ public class ShipmentDAO extends BaseCrudDAO<Shipment, Integer>{
     @Override
     protected Shipment map(ResultSet resultSet) throws SQLException {
         return new Shipment(resultSet.getInt("shipment_id"),
-            resultSet.getString("shipment_destination"),
+            resultSet.getString("destination"),
             resultSet.getString("shipment_date"),
-            resultSet.getString("delivery_status"));
+            resultSet.getString("shipment_status"));
     }
 
     @Override
@@ -34,7 +34,7 @@ public class ShipmentDAO extends BaseCrudDAO<Shipment, Integer>{
 
     @Override
     protected String toInsertColumns() {
-       return String.format("('%s', '%s', '%s')", "shipment_destination", "shipment_date", "delivery_status"); 
+       return String.format("('%s', '%s', '%s')", "destination", "shipment_date", "shipment_status"); 
     }
 
     @Override
