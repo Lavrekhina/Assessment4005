@@ -4,6 +4,8 @@
  */
 package com.prins.legal_system.model;
 
+import utils.StringUtils;
+
 /**
  *
  * @author soflavre
@@ -84,6 +86,15 @@ public class Order {
      */
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("ID: %s Order Date: %s Customer Name: %s Order Status: %s",
+               StringUtils.fillTo(String.valueOf(id), 15), 
+               StringUtils.fillTo(date, 15), 
+               StringUtils.fillTo(customerName, 15), 
+               StringUtils.fillTo(status, 15));
     }
             
 }

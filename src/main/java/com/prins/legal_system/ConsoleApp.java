@@ -4,7 +4,9 @@
  */
 package com.prins.legal_system;
 import com.prins.legal_system.DAO.InventoryDAO;
+import com.prins.legal_system.DAO.OrderDAO;
 import com.prins.legal_system.model.Inventory;
+import com.prins.legal_system.model.Order;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -14,8 +16,9 @@ import java.util.*;
  * @author soflavre
  */
 public class ConsoleApp {
-    private static final Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in).useDelimiter("\\n");
     private static final InventoryDAO inventoryDAO = new InventoryDAO();
+    private static final OrderDAO orderDAO = new OrderDAO();
     private static final String DATE_FORMAT = "YYYY-MM-dd";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 
@@ -33,7 +36,8 @@ public class ConsoleApp {
                 case 1:
                     manageInventory();
                     break;
-//                case 2: processOrders(); break;
+                case 2: processOrders(); 
+                    break;
 //                case 3: trackShipments(); break;
                 case 4:
                     System.out.println("Exiting application. Goodbye!");
@@ -96,8 +100,59 @@ public class ConsoleApp {
         }
 
     }
+    
+    private static void processOrders() throws SQLException {
+       while (true) {
+            System.out.println("\nManage Orders:");
+            System.out.println("1. Add Order");
+            System.out.println("2. View Order");
+            System.out.println("3. Delete Order");
+            System.out.println("4. Back to Main Menu");
+            System.out.print("Select an option: ");
 
-
+            int choice = getIntInput();
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter order date: ");
+                    String date = getDateString();
+                    System.out.print("Enter customer name: ");
+                    String customerName = scanner.next();
+                    System.out.print("Enter order status: ");
+                    String status = scanner.next();
+                    orderDAO.insert(new Order(date, customerName, status));
+                    System.out.println("Order added successfully.");
+                    break;
+                case 2:
+                    System.out.println("Current Orders:");
+                    showFullOrders();
+                    break;
+                case 3:
+                    System.out.println("Current Orders:");
+                    showFullOrders();
+                    System.out.print("Enter Order ID: ");
+                    int id = getIntInput();
+                    orderDAO.deleteById(id);
+                    System.out.println("Order deleted successfully.");
+                    showFullOrders();
+                case 4:
+                    return;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        } 
+    }
+    private static void showFullOrders() throws SQLException {
+        var all = orderDAO.getAll();
+        if (all.isEmpty()) {
+            System.out.println("Order is empty.");
+        } else {
+            orderDAO.getAll().forEach(order -> {
+                System.out.println(order.toString());
+            });
+        }
+    }
+    
+    
     private static int getIntInput() {
         while (!scanner.hasNextInt()) {
             System.out.print("Invalid input. Enter a number: ");

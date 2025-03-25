@@ -58,6 +58,10 @@ public class Inventory {
 
     @Override
     public String toString() {
-        return String.format("ID: %s Name: %s Location: %s Quantity: %s", StringUtils.fillTo(String.valueOf(id), 15), StringUtils.fillTo(name, 15), StringUtils.fillTo(location, 15), StringUtils.fillTo(String.valueOf(quantity), 15));
+        return String.format("ID: %s Name: %s Location: %s Quantity: %s", 
+                StringUtils.fillTo(String.valueOf(id), 15), 
+                StringUtils.fillTo(name, 15), 
+                StringUtils.fillTo(location, 15), 
+                StringUtils.fillTo(String.valueOf(quantity), 15));
     }
 }
