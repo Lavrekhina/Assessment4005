@@ -29,7 +29,7 @@ public class ShipmentDAO extends BaseCrudDAO<Shipment, Integer>{
 
     @Override
     protected String toInsertValue(Shipment shipment) {
-        return String.format("('%s', '%s', '%s')", shipment.getDestination(), shipment.getDate(), shipment.getDeliveryStatus());
+        return String.format("('%s', '%s', '%s')", shipment.getDestination(), shipment.getDate(), shipment.getShipmentStatus());
      }
 
     @Override

@@ -14,7 +14,7 @@ public class Shipment {
     private Integer id;
     private String destination;
     private String date;
-    private String deliveryStatus;
+    private String shipmentStatus;
 
     public Shipment(){
     }
@@ -23,7 +23,7 @@ public class Shipment {
         this.id = id;
         this.destination = destination;
         this.date = date;
-        this.deliveryStatus = deliveryStatus;
+        this.shipmentStatus = shipmentStatus;
     }
     
     public Shipment(String destination, String date, String deliveryStatus){
@@ -75,23 +75,23 @@ public class Shipment {
     /**
      * @return the deliveryStatus
      */
-    public String getDeliveryStatus() {
-        return deliveryStatus;
+    public String getShipmentStatus() {
+        return shipmentStatus;
     }
 
     /**
      * @param deliveryStatus the deliveryStatus to set
      */
-    public void setDeliveryStatus(String deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
+    public void setShipmentStatus(String shipmentStatus) {
+        this.shipmentStatus = shipmentStatus;
     }
     
     @Override
     public String toString() {
-        return String.format("ID: %s Destination: %s Date: %s Delivery Status: %s",
+        return String.format("ID: %s Destination: %s Date: %s Shipment Status: %s",
                StringUtils.fillTo(String.valueOf(id), 15), 
                StringUtils.fillTo(destination, 15), 
                StringUtils.fillTo(date, 15), 
-               StringUtils.fillTo(deliveryStatus, 15));
+               StringUtils.fillTo(shipmentStatus, 15));
     }
 }

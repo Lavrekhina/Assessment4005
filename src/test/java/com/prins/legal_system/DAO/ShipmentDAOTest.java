@@ -1,28 +1,27 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.prins.legal_system.DAO;
 
 import com.prins.legal_system.configuration.DBWorker;
-import com.prins.legal_system.model.Inventory;
-import com.prins.legal_system.model.Order;
+import com.prins.legal_system.model.Shipment;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
  * @author soflavre
  */
-public class OrderDAOTest {
-    private OrderDAO dao = new OrderDAO();
+public class ShipmentDAOTest {
+    private ShipmentDAO dao = new ShipmentDAO();
 
     @BeforeEach
     void setUp() throws SQLException, IOException {
@@ -35,10 +34,10 @@ public class OrderDAOTest {
     }
 
     @Test
-    void shouldSuccessfullyInsertOrder() throws SQLException {
-        dao.insert(new Order("2024-04-01", "Ann Robs", "Recieved"));
-        dao.insert(new Order("2024-04-05", "Will Bank", "Paid"));
-        dao.insert(new Order("2024-04-10", "Robert Smith", "Recieved"));
+    void shouldSuccessfullyInsertShipment() throws SQLException {
+        dao.insert(new Shipment("London", "2024-04-01","Delivered"));
+        dao.insert(new Shipment("Wimbledon", "2024-04-05", "Dispached"));
+        dao.insert(new Shipment("Oval", "2024-04-10", "In transt"));
 
 
         var result = dao.getAll();
@@ -47,13 +46,13 @@ public class OrderDAOTest {
     }
     
     @Test
-    void shouldSuccessfullyFilterOrder() throws SQLException {
-        dao.insert(new Order("2024-04-01", "Ann Robs", "Recieved"));
-        var check = dao.insert(new Order("2024-04-05", "Will Bank", "Paid"));
-        dao.insert(new Order("2024-04-10", "Robert Smith", "Recieved"));
+    void shouldSuccessfullyFilterShipment() throws SQLException {
+        dao.insert(new Shipment("London", "2024-04-01","Delivered"));
+        var check = dao.insert(new Shipment("Wimbledon", "2024-04-05", "Dispached"));
+        dao.insert(new Shipment("Oval", "2024-04-10", "In transt"));
 
 
-        var result = dao.getAll("order_date = '2024-04-01'");
+        var result = dao.getAll("destination = 'London'");
         assertNotNull(result);
         assertFalse(result.isEmpty());
 
@@ -64,9 +63,9 @@ public class OrderDAOTest {
 
     @Test
     void shouldSuccessfullyDelete() throws SQLException {
-        dao.insert(new Order("2024-04-01", "Ann Robs", "Recieved"));
-        dao.insert(new Order("2024-04-05", "Will Bank", "Paid"));
-        dao.insert(new Order("2024-04-10", "Robert Smith", "Recieved"));
+        dao.insert(new Shipment("London", "2024-04-01","Delivered"));
+        dao.insert(new Shipment("Wimbledon", "2024-04-05", "Dispached"));
+        dao.insert(new Shipment("Oval", "2024-04-10", "In transt"));
 
 
         var result = dao.getAll();
