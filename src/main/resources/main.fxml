@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: blue;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.prins.legal_system.controllers.MainController">
+   <children>
+      <BorderPane layoutX="179.0" layoutY="80.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <left>
+            <VBox maxWidth="150.0" prefHeight="400.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label text="Objects">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="5.0" top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <ListView fx:id="listMenu" prefWidth="200.0" />
+               </children>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+            </VBox>
+         </left>
+         <center>
+            <StackPane fx:id="viewsStack" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <AnchorPane fx:id="inventoryNode" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <fx:include source="inventory.fxml" />
+                     </children>
+                  </AnchorPane>
+
+                  <AnchorPane fx:id="ordersNode" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <fx:include source="orders.fxml" />
+                     </children>
+                  </AnchorPane>
+
+                  <AnchorPane fx:id="shipmentsNode" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <fx:include source="shipments.fxml" />
+                     </children>
+                  </AnchorPane>
+               </children>
+            </StackPane>
+         </center>
+      </BorderPane>
+   </children>
+</AnchorPane>
