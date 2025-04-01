@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
             style="-fx-background-color: #ffffff;"
-            fx:controller="com.prins.legal_system.controllers.OrdersController"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sofia.legal_system.controllers.ShipmentsController"
             prefHeight="400.0" prefWidth="600.0">
 
 </AnchorPane>

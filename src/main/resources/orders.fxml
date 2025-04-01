@@ -9,7 +9,7 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             style="-fx-background-color: #ffffff;"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.prins.legal_system.controllers.OrdersController"
+            fx:controller="com.sofia.legal_system.controllers.OrdersController"
             prefHeight="400.0" prefWidth="600.0">
 
 </AnchorPane>
