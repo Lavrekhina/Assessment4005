@@ -5,6 +5,7 @@
 package com.sofia.legal_system.service.impls;
 
 import com.sofia.legal_system.Legal_system;
+import com.sofia.legal_system.controllers.dialogs.BaseDataDrivenController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -31,6 +32,27 @@ public class GUIService {
             loader.setLocation(xmlUrl);
             Parent root = loader.load();
 
+            Stage stage = new Stage();
+            stage.initOwner(primaryStage);
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void showDialog(String name, Object data) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            URL xmlUrl = Legal_system.class.getResource(name);
+            loader.setLocation(xmlUrl);
+            Parent root = loader.load();
+            if(loader.getController() instanceof BaseDataDrivenController controller){
+                controller.setData(data);
+                controller.init();
+            }
             Stage stage = new Stage();
             stage.initOwner(primaryStage);
             stage.initModality(Modality.WINDOW_MODAL);

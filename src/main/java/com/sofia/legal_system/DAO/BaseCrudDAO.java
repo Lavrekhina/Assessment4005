@@ -16,6 +16,7 @@ import java.util.List;
  */
 public abstract class BaseCrudDAO<T, U> {
 
+    private static final String UPDATE_QUERY = "UPDATE %s SET %s WHERE %s";
     private static final String INSERT_QUERY = " insert into %s %s values %s";
     private static final String RETRIEVE_ALL_QUERY = "select * from %s";
     private static final String RETRIEVE_WITH_FILTER_QUERY = "select * from %s where %s ";
@@ -120,6 +121,16 @@ public abstract class BaseCrudDAO<T, U> {
         return result;
     }
 
+
+    public T update(T entity) throws SQLException {
+        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        stmt.execute(String.format(UPDATE_QUERY, tableName(), toUpdateValue(entity), toIdFilter(getId(entity))));
+
+        var result = getById(toIdValue(stmt.getGeneratedKeys()));
+        stmt.close();
+        return result;
+    }
+
     /**
      * Retrieves an entity by its identifier.
      *
@@ -192,4 +203,7 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     protected abstract U toIdValue(ResultSet resultSet) throws SQLException;
+
+
+    protected abstract String toUpdateValue(T t);
 }

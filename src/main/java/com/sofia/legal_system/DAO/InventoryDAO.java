@@ -48,4 +48,12 @@ public class InventoryDAO extends BaseCrudDAO<Inventory, Integer> {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    protected String toUpdateValue(Inventory inventory) {
+        return String.format("item_name = '%s', item_quantity = %d, item_location = '%s'",
+                inventory.getName(),
+                inventory.getQuantity(),
+                inventory.getLocation());
+    }
 }
