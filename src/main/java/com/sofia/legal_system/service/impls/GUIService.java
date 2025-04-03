@@ -31,6 +31,10 @@ public class GUIService {
             URL xmlUrl = Legal_system.class.getResource(name);
             loader.setLocation(xmlUrl);
             Parent root = loader.load();
+            
+            if(loader.getController() instanceof BaseDataDrivenController controller){
+                controller.init();
+            }
 
             Stage stage = new Stage();
             stage.initOwner(primaryStage);

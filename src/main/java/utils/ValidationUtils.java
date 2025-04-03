@@ -4,11 +4,16 @@
  */
 package utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 /**
  *
  * @author soflavre
  */
 public class ValidationUtils {
+    
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd");
     
     public static boolean validRequiredString(String input){
         if (input == null){
@@ -36,5 +41,20 @@ public class ValidationUtils {
         return input <= maxvalue 
                 && input >= minvalue;
           
+     }
+     
+     public static boolean validDate(String input){
+         if (input == null){
+            return false;
+        }
+         
+         try {
+             DATE_FORMAT.parse(input);
+             return true;
+         } catch(ParseException e) {
+             return false;
+         }
+         
+         
      }
 }

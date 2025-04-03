@@ -58,7 +58,7 @@ public class OrderDAO extends BaseCrudDAO<Order, Integer> {
 
     @Override
     protected String toUpdateValue(Order order) {
-        return String.format("order_date = '%s', order_status = '%s', customer_name = '%s", order.getDate(), order.getStatus(), order.getCustomerName());
+        return String.format("order_date = '%s', order_status = '%s', customer_name = '%s'", order.getDate(), order.getStatus(), order.getCustomerName());
     }
 
 }
