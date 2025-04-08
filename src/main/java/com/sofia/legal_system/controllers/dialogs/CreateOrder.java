@@ -17,19 +17,21 @@ import javafx.util.converter.NumberStringConverter;
 
 
 import java.sql.SQLException;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 
 import utils.ValidationUtils;
 
 public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
-
+    public DatePicker orderDatePicker;
     public Button cancelBtn;
     public Button saveBtn;
-    public TextField orderDateField;
     public Label orderDateFieldError;
     public Label customerNameFieldError;
     public TextField customerNameField;
     public Label statusFieldError;
-    public TextField statusField;
+    public ComboBox statusDropDown;
     private OrderViewModel viewModel;
     private final SimpleBooleanProperty isValid = new SimpleBooleanProperty(false);
     private final OrderDAO orderDAO = new OrderDAO();
@@ -67,9 +69,7 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
     public void init() {
         viewModel = data != null ? data : new OrderViewModel();
 
-        orderDateField.textProperty().bindBidirectional(viewModel.dateProperty());
         customerNameField.textProperty().bindBidirectional(viewModel.customerNameProperty());
-        statusField.textProperty().bindBidirectional(viewModel.statusProperty());
 
         viewModel.dateProperty().addListener((observableValue, number, t1) -> {
             isFullyValid();
@@ -89,7 +89,16 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
             statusFieldError.setText(valid ? "" : "Status field is required");
 
         });
-
+        
+        statusDropDown.setItems(FXCollections.observableArrayList("Created", "Prepared","Ready for shipment"));
+        statusDropDown.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            viewModel.setStatus(statusDropDown.getSelectionModel().getSelectedItem().toString());
+        });
+        
+        orderDatePicker.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+            viewModel.setDate(newValue.toString());
+        });
+                
         saveBtn.disableProperty().bind(isValid.not());
 
         isFullyValid();

@@ -29,21 +29,21 @@
          <center>
             <StackPane fx:id="viewsStack" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <AnchorPane fx:id="inventoryNode" prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane fx:id="inventoryNode">
                      <children>
-                        <fx:include source="inventory.fxml" />
+                        <fx:include source="inventory.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
 
-                  <AnchorPane fx:id="ordersNode" prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane fx:id="ordersNode">
                      <children>
-                        <fx:include source="orders.fxml" />
+                        <fx:include source="orders.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
 
-                  <AnchorPane fx:id="shipmentsNode" prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane fx:id="shipmentsNode">
                      <children>
-                        <fx:include source="shipments.fxml" />
+                        <fx:include source="shipments.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
                </children>

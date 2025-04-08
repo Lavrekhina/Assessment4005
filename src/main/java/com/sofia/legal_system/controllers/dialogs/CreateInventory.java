@@ -8,9 +8,11 @@ import com.sofia.legal_system.DAO.InventoryDAO;
 import com.sofia.legal_system.model.Inventory;
 import com.sofia.legal_system.viewmodels.InventoryViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.util.converter.NumberStringConverter;
@@ -24,12 +26,12 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
 
     public Button cancelBtn;
     public Button saveBtn;
-    public TextField locationField;
     public Label locationFieldError;
     public Label quantityFieldError;
     public TextField quantityField;
     public Label nameFieldError;
     public TextField nameField;
+    public ComboBox locationDropDown;
     private InventoryViewModel viewModel;
     private final SimpleBooleanProperty isValid = new SimpleBooleanProperty(false);
     private final InventoryDAO inventoryDAO = new InventoryDAO();
@@ -57,7 +59,7 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
 
     private void isFullyValid() {
         Boolean valid = ValidationUtils.validRequiredString(viewModel.getName())
-                && ValidationUtils.validRequiredString(viewModel.getLocation())
+                && locationDropDown.getSelectionModel().getSelectedItem() != null
                 && ValidationUtils.validInteger(viewModel.getQuantity(), 0);
 
         isValid.setValue(valid);
@@ -67,7 +69,6 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
     public void init() {
         viewModel = data != null ? data : new InventoryViewModel();
 
-        locationField.textProperty().bindBidirectional(viewModel.locationProperty());
         quantityField.textProperty().bindBidirectional(viewModel.quantityProperty(), new NumberStringConverter());
         nameField.textProperty().bindBidirectional(viewModel.nameProperty());
 
@@ -77,22 +78,19 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
             quantityFieldError.setText(valid ? "" : "Quantity field is required and should not be less than zero");
         });
 
-        viewModel.locationProperty().addListener((observableValue, oldValue, newValue) -> {
-            isFullyValid();
-            boolean valid = ValidationUtils.validRequiredString(viewModel.getLocation());
-            locationFieldError.setText(valid ? "" : "Location field is required");
-        });
-
         viewModel.nameProperty().addListener((observableValue, oldValue, newValue) -> {
             isFullyValid();
             boolean valid = ValidationUtils.validRequiredString(viewModel.getName());
             nameFieldError.setText(valid ? "" : "Name field is required");
-
         });
 
+        locationDropDown.setItems(FXCollections.observableArrayList("London", "Manchester"));
+        locationDropDown.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            viewModel.setLocation(locationDropDown.getSelectionModel().getSelectedItem().toString());
+        });
         saveBtn.disableProperty().bind(isValid.not());
-
         isFullyValid();
     }
+
 }
 

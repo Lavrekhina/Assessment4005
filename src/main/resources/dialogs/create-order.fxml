@@ -2,6 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -27,7 +29,7 @@
                   <VBox prefWidth="100.0" spacing="3.0">
                      <children>
                         <Label text="Order Date" />
-                        <TextField fx:id="orderDateField" />
+                        <DatePicker fx:id="orderDatePicker" maxWidth="1.7976931348623157E308" />
                         <Label fx:id="orderDateFieldError" style="-fx-text-fill: red;" />
                      </children>
                   </VBox>
@@ -41,7 +43,7 @@
                   <VBox prefWidth="100.0" spacing="3.0">
                      <children>
                         <Label text="Status" />
-                        <TextField fx:id="statusField" />
+                        <ComboBox fx:id="statusDropDown" maxWidth="1.7976931348623157E308" />
                         <Label fx:id="statusFieldError" style="-fx-text-fill: red;" />
                      </children>
                   </VBox>

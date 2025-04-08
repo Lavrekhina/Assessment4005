@@ -2,7 +2,9 @@ package com.sofia.legal_system.controllers;
 
 import com.sofia.legal_system.DAO.OrderDAO;
 import com.sofia.legal_system.service.impls.GUIService;
+import com.sofia.legal_system.viewmodels.InventoryViewModel;
 import com.sofia.legal_system.viewmodels.OrderViewModel;
+import com.sofia.legal_system.viewmodels.OrdersFilterViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,6 +13,7 @@ import javafx.scene.control.*;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import javafx.collections.FXCollections;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 
@@ -24,6 +27,11 @@ public class OrdersController {
     public Button refreshBtn;
     public Button editBtn;
     public ProgressBar loadingProgressBar;
+    public TextField customerNameSearchTextField;
+    public DatePicker dateMinField;
+    public DatePicker dateMaxField;
+    public ComboBox statusDropDown;
+    private final OrdersFilterViewModel filterViewModel = new OrdersFilterViewModel();
 
     @FXML
     public void initialize() {
@@ -46,13 +54,23 @@ public class OrdersController {
         editBtn.disableProperty().bind(ordersTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(ordersTable.getSelectionModel().selectedItemProperty().isNull());
         loadingProgressBar.visibleProperty().bind(fetchingEntities);
+        customerNameSearchTextField.textProperty().bindBidirectional(filterViewModel.getcustomerNameSearch());
+        dateMinField.valueProperty().bindBidirectional(filterViewModel.getqMin());
+        dateMaxField.valueProperty().bindBidirectional(filterViewModel.getqMax());
+        statusDropDown.setItems(FXCollections.observableArrayList("Created", "Prepared","Ready for shipment"));
+        statusDropDown.getSelectionModel().selectedItemProperty().addListener((obs,oldValue, newValue)-> {
+            filterViewModel.getstatusSearch().setValue(newValue.toString());
+            
+       
+        });
     }
 
     public void refreshTable(ActionEvent actionEvent) {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
             try {
-                return ordersDAO.getAll().stream().map(i -> new OrderViewModel(i.getId(), i.getDate(), i.getCustomerName(), i.getStatus())).toList();
+                String filter = filterViewModel.toSqlFilter();  
+                return (filter.isEmpty()? ordersDAO.getAll():ordersDAO.getAll(filter)).stream().map(i -> new OrderViewModel(i.getId(), i.getCustomerName(), i.getDate(), i.getStatus())).toList();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -96,5 +114,9 @@ public class OrdersController {
             fetchingEntities.set(false);
         });
 
+    }
+    
+    public void filterEntities(ActionEvent actionEvent) {
+        refreshTable(null);
     }
 }
