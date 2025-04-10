@@ -5,8 +5,10 @@
 package com.sofia.legal_system.controllers.dialogs;
 
 import com.sofia.legal_system.DAO.OrderDAO;
+import com.sofia.legal_system.DAO.ShipmentDAO;
 import com.sofia.legal_system.model.Order;
-import com.sofia.legal_system.viewmodels.OrderViewModel;
+import com.sofia.legal_system.model.Shipment;
+import com.sofia.legal_system.viewmodels.ShipmentViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,18 +27,18 @@ import javafx.scene.control.DatePicker;
 
 import utils.ValidationUtils;
 
-public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
-    public DatePicker orderDatePicker;
+public class CreateShipment extends BaseDataDrivenController<ShipmentViewModel> {
+    public DatePicker shipmentDatePicker;
     public Button cancelBtn;
     public Button saveBtn;
-    public Label orderDateFieldError;
-    public Label customerNameFieldError;
-    public TextField customerNameField;
+    public Label shipmentDateFieldError;
+    public Label destinationFieldError;
+    public ComboBox destinationDropDown;
     public Label statusFieldError;
     public ComboBox statusDropDown;
-    private OrderViewModel viewModel;
+    private ShipmentViewModel viewModel;
     private final SimpleBooleanProperty isValid = new SimpleBooleanProperty(false);
-    private final OrderDAO orderDAO = new OrderDAO();
+    private final ShipmentDAO shipmentDAO = new ShipmentDAO();
 
     @FXML
     public void initialize() {
@@ -49,11 +51,11 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
 
     public void save(ActionEvent actionEvent) {
         try {
-            Order order = new Order(viewModel.getId(), viewModel.getDate(), viewModel.getCustomerName(), viewModel.getStatus());
+            Shipment shipment = new Shipment(viewModel.getId(), viewModel.getDestination(), viewModel.getDate(), viewModel.getShipmentStatus());
             if (viewModel.getId() != null) {
-                orderDAO.update(order);
+                shipmentDAO.update(shipment);
             } else {
-                orderDAO.insert(order);
+                shipmentDAO.insert(shipment);
             }
 
             Stage stage = (Stage) saveBtn.getScene().getWindow();
@@ -66,43 +68,47 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
 
     private void isFullyValid() {
         Boolean valid = ValidationUtils.validDate(viewModel.getDate())
-                && ValidationUtils.validRequiredString(viewModel.getCustomerName())
-                && ValidationUtils.validRequiredString(viewModel.getStatus());
+                && ValidationUtils.validRequiredString(viewModel.getDestination())
+                && ValidationUtils.validRequiredString(viewModel.getShipmentStatus());
 
         isValid.setValue(valid);
     }
 
     @Override
     public void init() {
-        viewModel = data != null ? data : new OrderViewModel();
+        viewModel = data != null ? data : new ShipmentViewModel();
 
-        customerNameField.textProperty().bindBidirectional(viewModel.customerNameProperty());
 
         viewModel.dateProperty().addListener((observableValue, number, t1) -> {
             isFullyValid();
             boolean valid = ValidationUtils.validDate(viewModel.getDate());
-            orderDateFieldError.setText(valid ? "" : "Date field is required and should be formated like 'YYYY-MM-dd'");
+            shipmentDateFieldError.setText(valid ? "" : "Date field is required and should be formated like 'YYYY-MM-dd'");
         });
 
-        viewModel.customerNameProperty().addListener((observableValue, oldValue, newValue) -> {
+        viewModel.destinationProperty().addListener((observableValue, oldValue, newValue) -> {
             isFullyValid();
-            boolean valid = ValidationUtils.validRequiredString(viewModel.getCustomerName());
-            customerNameFieldError.setText(valid ? "" : "Customer name field is required");
+            boolean valid = ValidationUtils.validRequiredString(viewModel.getDestination());
+            destinationFieldError.setText(valid ? "" : "Destination field is required");
         });
 
-        viewModel.statusProperty().addListener((observableValue, oldValue, newValue) -> {
+        viewModel.shipmentStatusProperty().addListener((observableValue, oldValue, newValue) -> {
             isFullyValid();
-            boolean valid = ValidationUtils.validRequiredString(viewModel.getStatus());
+            boolean valid = ValidationUtils.validRequiredString(viewModel.getShipmentStatus());
             statusFieldError.setText(valid ? "" : "Status field is required");
 
         });
 
-        statusDropDown.setItems(FXCollections.observableArrayList("Created", "Prepared", "Ready for shipment"));
+        statusDropDown.setItems(FXCollections.observableArrayList("Delivered","Dispached", "In transit","Canceled"));
         statusDropDown.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            viewModel.setStatus(statusDropDown.getSelectionModel().getSelectedItem().toString());
+            viewModel.setShipmentStatus(statusDropDown.getSelectionModel().getSelectedItem().toString());
+        });
+        
+        destinationDropDown.setItems(FXCollections.observableArrayList("London", "Manchester"));
+        destinationDropDown.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            viewModel.setDestination(destinationDropDown.getSelectionModel().getSelectedItem().toString());
         });
 
-        orderDatePicker.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+        shipmentDatePicker.valueProperty().addListener((observableValue, oldValue, newValue) -> {
             viewModel.setDate(newValue.toString());
         });
 

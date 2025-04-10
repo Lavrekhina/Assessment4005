@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 
@@ -41,6 +42,8 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
     }
 
     public void cancel(ActionEvent actionEvent) {
+        Stage stage = (Stage) cancelBtn.getScene().getWindow();
+        stage.close();
     }
 
     public void save(ActionEvent actionEvent) {
@@ -51,6 +54,9 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
             } else {
                 inventoryDAO.insert(inventory);
             }
+
+            Stage stage = (Stage) saveBtn.getScene().getWindow();
+            stage.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

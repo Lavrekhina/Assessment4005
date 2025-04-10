@@ -57,11 +57,9 @@ public class OrdersController {
         customerNameSearchTextField.textProperty().bindBidirectional(filterViewModel.getcustomerNameSearch());
         dateMinField.valueProperty().bindBidirectional(filterViewModel.getqMin());
         dateMaxField.valueProperty().bindBidirectional(filterViewModel.getqMax());
-        statusDropDown.setItems(FXCollections.observableArrayList("Created", "Prepared","Ready for shipment"));
+        statusDropDown.setItems(FXCollections.observableArrayList("Cancelled","Created", "Prepared","Ready for shipment"));
         statusDropDown.getSelectionModel().selectedItemProperty().addListener((obs,oldValue, newValue)-> {
             filterViewModel.getstatusSearch().setValue(newValue.toString());
-            
-       
         });
     }
 

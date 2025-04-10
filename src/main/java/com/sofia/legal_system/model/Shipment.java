@@ -23,7 +23,7 @@ public class Shipment {
         this.id = id;
         this.destination = destination;
         this.date = date;
-        this.shipmentStatus = shipmentStatus;
+        this.shipmentStatus = deliveryStatus;
     }
     
     public Shipment(String destination, String date, String deliveryStatus){

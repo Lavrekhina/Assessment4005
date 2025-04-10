@@ -58,6 +58,7 @@ public class GUIService {
                 controller.init();
             }
             Stage stage = new Stage();
+            stage.setResizable(false);
             stage.initOwner(primaryStage);
             stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(new Scene(root));

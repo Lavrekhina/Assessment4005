@@ -29,7 +29,6 @@ public class MainController {
         });
     }
 
-
     private static class MenuItem {
         private String label;
         private Pane pane;
