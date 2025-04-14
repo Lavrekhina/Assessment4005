@@ -6,7 +6,7 @@ package com.sofia.legal_system.controllers.dialogs;
 
 import com.sofia.legal_system.DAO.InventoryDAO;
 import com.sofia.legal_system.model.Inventory;
-import com.sofia.legal_system.viewmodels.InventoryViewModel;
+import com.sofia.legal_system.viewmodels.inventory.InventoryViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -18,8 +18,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
-
 import java.sql.SQLException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import utils.ValidationUtils;
 
@@ -56,6 +57,12 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
             }
 
             Stage stage = (Stage) saveBtn.getScene().getWindow();
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Inventory");
+            alert.setHeaderText(null);
+            alert.setContentText("Item with name %s successfully added!".formatted(inventory.getName()));
+
+            alert.showAndWait();
             stage.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -95,8 +102,8 @@ public class CreateInventory extends BaseDataDrivenController<InventoryViewModel
             viewModel.setLocation(locationDropDown.getSelectionModel().getSelectedItem().toString());
         });
         saveBtn.disableProperty().bind(isValid.not());
+        locationDropDown.getSelectionModel().selectFirst();
         isFullyValid();
     }
 
 }
-

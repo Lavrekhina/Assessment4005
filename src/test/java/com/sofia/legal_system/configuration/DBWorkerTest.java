@@ -28,13 +28,6 @@ class DBWorkerTest {
     }
 
     @Test
-    void shouldSuccessfullyOpenAndCloseConnection() throws SQLException {
-        var connection = DBWorker.getInstance().getConnection();
-        DBWorker.getInstance().closeConnection();
-        assertTrue(connection.isClosed());
-    }
-
-    @Test
     void shouldSuccessfullyInitDB() throws SQLException, IOException {
         var connection = DBWorker.getInstance().getConnection();
         var statement = connection.createStatement();

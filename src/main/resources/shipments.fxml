@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Pagination?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sofia.legal_system.controllers.ShipmentsController">
     <children>
@@ -78,6 +79,11 @@
                                         <ComboBox fx:id="shipmentStatusDropDown" />
                                     </children>
                                 </VBox>
+                                <Button mnemonicParsing="false" onAction="#clearFilter" text="Clear">
+                             <HBox.margin>
+                                 <Insets top="15.0" />
+                             </HBox.margin>
+                         </Button>
                                 <Button mnemonicParsing="false" onAction="#filterEntities" text="Filter">
                                     <HBox.margin>
                                         <Insets top="15.0" />
@@ -87,6 +93,22 @@
                         </HBox>
                     </content>
                 </TitledPane>
+                <HBox alignment="CENTER_LEFT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+               <GridPane.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </GridPane.margin>
+               <children>
+                  <ComboBox fx:id="pageSizeDropDown" prefWidth="150.0" />
+                  <Pagination fx:id="pagination" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pageCount="5" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets top="15.0" />
+                     </HBox.margin>
+                  </Pagination>
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </HBox>
             </children>
         </GridPane>
     </children>

@@ -4,24 +4,21 @@
  */
 package com.sofia.legal_system.controllers.dialogs;
 
-import com.sofia.legal_system.DAO.OrderDAO;
 import com.sofia.legal_system.DAO.ShipmentDAO;
-import com.sofia.legal_system.model.Order;
 import com.sofia.legal_system.model.Shipment;
-import com.sofia.legal_system.viewmodels.ShipmentViewModel;
+import com.sofia.legal_system.viewmodels.shipments.ShipmentViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.util.converter.NumberStringConverter;
 
 
 import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 
@@ -59,6 +56,12 @@ public class CreateShipment extends BaseDataDrivenController<ShipmentViewModel> 
             }
 
             Stage stage = (Stage) saveBtn.getScene().getWindow();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Shipment");
+            alert.setHeaderText(null);
+            alert.setContentText("Shipment with date %s successfully added!".formatted(shipment.getDate()));
+
+            alert.showAndWait();
             stage.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -113,6 +116,8 @@ public class CreateShipment extends BaseDataDrivenController<ShipmentViewModel> 
         });
 
         saveBtn.disableProperty().bind(isValid.not());
+        statusDropDown.getSelectionModel().selectFirst();
+        destinationDropDown.getSelectionModel().selectFirst();
 
         isFullyValid();
     }

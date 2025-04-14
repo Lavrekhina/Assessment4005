@@ -2,8 +2,11 @@ package com.sofia.legal_system.controllers;
 
 import com.sofia.legal_system.DAO.InventoryDAO;
 import com.sofia.legal_system.service.impls.GUIService;
-import com.sofia.legal_system.viewmodels.InventoryFilterViewModel;
-import com.sofia.legal_system.viewmodels.InventoryViewModel;
+import com.sofia.legal_system.viewmodels.inventory.InventoryFilterViewModel;
+import com.sofia.legal_system.viewmodels.inventory.InventoryViewModel;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,11 +15,12 @@ import javafx.scene.control.*;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import javafx.collections.FXCollections;
 
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.converter.NumberStringConverter;
+import javafx.util.converter.IntegerStringConverter;
 
-public class InventoryController {
+public class InventoryController extends BasePagingController {
     public Button addBtn;
     public Button deleteBtn;
     public TableView<InventoryViewModel> inventoryTable;
@@ -27,11 +31,13 @@ public class InventoryController {
     public Button editBtn;
     public ProgressBar loadingProgressBar;
     public TextField nameSearchTextField;
-    public TextField locationSearchTextField;
+    public ComboBox<String> locationDropDown;
     public TextField qMinField;
     public TextField qMaxField;
 
     private final InventoryFilterViewModel filterViewModel = new InventoryFilterViewModel();
+    public ComboBox<Integer> pageSizeDropDown;
+    public Pagination pagination;
 
     @FXML
     public void initialize() {
@@ -56,25 +62,36 @@ public class InventoryController {
 
 
         nameSearchTextField.textProperty().bindBidirectional(filterViewModel.getNameSearch());
-        locationSearchTextField.textProperty().bindBidirectional(filterViewModel.getLocationSearch());
-        qMinField.textProperty().bindBidirectional(filterViewModel.getqMin(), new NumberStringConverter());
-        qMaxField.textProperty().bindBidirectional(filterViewModel.getqMax(), new NumberStringConverter());
+        qMinField.textProperty().bindBidirectional(filterViewModel.getqMin(), new IntegerStringConverter());
+        qMaxField.textProperty().bindBidirectional(filterViewModel.getqMax(), new IntegerStringConverter());
+        locationDropDown.setItems(FXCollections.observableArrayList("London", "Manchester"));
+        filterViewModel.getLocationSearch().bind(locationDropDown.getSelectionModel().selectedItemProperty());
+        initPaging(pagination, pageSizeDropDown, filterViewModel, p -> {
+            refreshTable(null);
+        });
 
+        refreshTable(null);
     }
 
     public void refreshTable(ActionEvent actionEvent) {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
-            try {
-                String filter = filterViewModel.toSqlFilter();  
-                return (filter.isEmpty()? inventoryDAO.getAll():inventoryDAO.getAll(filter)).stream().map(i -> new InventoryViewModel(i.getId(), i.getName(), i.getQuantity(), i.getLocation())).toList();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }).thenAccept(inventoryViewModels -> {
-            inventoryTable.getItems().clear();
-            inventoryTable.getItems().addAll(inventoryViewModels);
-            fetchingEntities.set(false);
+            String filter = filterViewModel.toSqlFilter();
+            return filter.isEmpty()
+                    ? inventoryDAO.getAll(filterViewModel.getPage().get(), filterViewModel.getPageSize().get())
+                    : inventoryDAO.getAll(filter, filterViewModel.getPage().get(), filterViewModel.getPageSize().get());
+        }).thenAccept(page -> {
+            var inventoryViewModels = page.getContent()
+                    .stream()
+                    .map(i -> new InventoryViewModel(i.getId(), i.getName(), i.getQuantity(), i.getLocation()))
+                    .toList();
+
+            Platform.runLater(() -> {
+                filterViewModel.getTotalPages().set(page.getTotalPages());
+                inventoryTable.getItems().clear();
+                inventoryTable.getItems().addAll(inventoryViewModels);
+                fetchingEntities.set(false);
+            });
         });
     }
 
@@ -118,5 +135,12 @@ public class InventoryController {
 
     public void filterEntities(ActionEvent actionEvent) {
         refreshTable(null);
+    }
+    
+    public void clearFilter(ActionEvent actionEvent){
+        locationDropDown.getSelectionModel().clearSelection();
+        filterViewModel.getNameSearch().set(null);
+        filterViewModel.getqMin().set(null);
+        filterViewModel.getqMax().set(null);
     }
 }

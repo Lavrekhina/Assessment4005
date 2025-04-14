@@ -6,7 +6,7 @@ package com.sofia.legal_system.controllers.dialogs;
 
 import com.sofia.legal_system.DAO.OrderDAO;
 import com.sofia.legal_system.model.Order;
-import com.sofia.legal_system.viewmodels.OrderViewModel;
+import com.sofia.legal_system.viewmodels.orders.OrderViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,12 +14,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.util.converter.NumberStringConverter;
 
 
 import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 
@@ -57,6 +57,12 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
             }
 
             Stage stage = (Stage) saveBtn.getScene().getWindow();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Order");
+            alert.setHeaderText(null);
+            alert.setContentText("Order for customer with name %s successfully added!".formatted(order.getCustomerName()));
+
+            alert.showAndWait();
             stage.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -107,7 +113,7 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
         });
 
         saveBtn.disableProperty().bind(isValid.not());
-
+        statusDropDown.getSelectionModel().selectFirst();
         isFullyValid();
     }
 }

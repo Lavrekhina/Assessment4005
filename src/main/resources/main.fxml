@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sofia.legal_system.controllers.MainController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sofia.legal_system.controllers.MainController">
    <children>
-      <BorderPane layoutX="179.0" layoutY="80.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <left>
             <VBox maxWidth="150.0" prefHeight="400.0" BorderPane.alignment="CENTER">
                <children>
@@ -19,7 +19,7 @@
                         <Insets bottom="10.0" left="5.0" top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <ListView fx:id="listMenu" prefWidth="200.0" />
+                  <ListView fx:id="listMenu" maxHeight="1.7976931348623157E308" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                </children>
                <BorderPane.margin>
                   <Insets />

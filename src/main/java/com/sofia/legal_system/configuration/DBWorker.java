@@ -8,17 +8,26 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 public class DBWorker {
     private static final DBWorker instance = new DBWorker();
     private static final String DROP_ALL_SQL = "select 'drop table ' || name || ';' from sqlite_master where type = 'table';";
-
+    private final int POOL_SIZE = 10;
+    private final BlockingQueue<Connection> pool = new ArrayBlockingQueue<>(POOL_SIZE);
     private final Properties properties;
-
-    private Connection connection;
 
     private DBWorker() {
         properties = loadProperties();
+        try {
+            for (int i = 0; i < POOL_SIZE; i++) {
+                pool.add(DriverManager.getConnection(properties.getProperty("url"), properties));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to initialize pool", e);
+        }
+
         System.out.println("Database properties loaded");
         System.out.println("Database initializing");
         try {
@@ -35,28 +44,31 @@ public class DBWorker {
 
     public Connection getConnection() {
         try {
-            if (connection == null || connection.isClosed()) {
-                try {
-                    connection = DriverManager.getConnection(properties.getProperty("url"), properties);
-                } catch (SQLException e) {
-                    throw new DBException(e.getMessage());
-                }
-
-            }
-        } catch (SQLException e) {
-            throw new DBException(e.getMessage());
+            return pool.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        return connection;
     }
 
-    public void closeConnection() {
-        if (connection != null) {
+    public void releaseConnection(Connection conn) {
+        if (conn == null) {
+            return;
+        }
+        try {
+            conn.setAutoCommit(true); // Reset connection state
+            pool.offer(conn); // Return to pool
+        } catch (SQLException e) {
+            // If we can't reset the connection, close it permanently
             try {
-                connection.close();
-            } catch (SQLException e) {
-                throw new DBException(e.getMessage());
+                conn.close();
+            } catch (SQLException ignored) {
             }
-
+            // And create a new one to maintain pool size
+            try {
+                pool.add(DriverManager.getConnection("jdbc:sqlite:sample.db"));
+            } catch (SQLException ex) {
+                // Log pool maintenance failure
+            }
         }
     }
 
@@ -74,7 +86,7 @@ public class DBWorker {
             try {
                 var statement = conn.createStatement();
                 var result = statement.execute(Files.readString(file.toPath()));
-
+                statement.close();
             } catch (IOException | SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -93,17 +105,8 @@ public class DBWorker {
             var result = dropStatement.execute(query);
             System.out.printf("Dropping table '%s'%n", query);
         }
+        dropStatement.close();
         dropRs.close();
-    }
-
-    private Properties loadProperties() {
-        try (FileInputStream fs = new FileInputStream("db.properties")) {
-            Properties props = new Properties();
-            props.load(fs);
-            return props;
-        } catch (IOException e) {
-            throw new DBException(e.getMessage());
-        }
     }
 
     private void initialize() throws SQLException {
@@ -121,6 +124,16 @@ public class DBWorker {
                 System.out.println("Error DB initialization");
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    private Properties loadProperties() {
+        try (FileInputStream fs = new FileInputStream("db.properties")) {
+            Properties props = new Properties();
+            props.load(fs);
+            return props;
+        } catch (IOException e) {
+            throw new DBException(e.getMessage());
         }
     }
 }

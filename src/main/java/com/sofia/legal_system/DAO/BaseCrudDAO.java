@@ -1,6 +1,7 @@
 package com.sofia.legal_system.DAO;
 
 import com.sofia.legal_system.configuration.DBWorker;
+import com.sofia.legal_system.model.Page;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,8 +20,15 @@ public abstract class BaseCrudDAO<T, U> {
     private static final String UPDATE_QUERY = "UPDATE %s SET %s WHERE %s";
     private static final String INSERT_QUERY = " insert into %s %s values %s";
     private static final String RETRIEVE_ALL_QUERY = "select * from %s";
+    private static final String RETRIEVE_ALL_WITH_PAGE_QUERY = "select * from %s limit %s offset %s";
     private static final String RETRIEVE_WITH_FILTER_QUERY = "select * from %s where %s ";
+    private static final String RETRIEVE_WITH_FILTER_PAGE_QUERY = "select * from %s where %s limit %s offset %s";
+    private static final String RETRIEVE_COUNT_FILTER_QUERY = "select count() as count from %s where %s ";
+    private static final String RETRIEVE_ALL_COUNT_QUERY = "select count() as count from %s";
+
     private static final String DELETE_BY_ID = "delete from %s where %s";
+    private static final DBWorker dbWorker = DBWorker.getInstance();
+
 
     /**
      * Constructs a new BaseCrudDAO instance.
@@ -35,7 +43,7 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     public List<T> getAll() throws SQLException {
-        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        var stmt = dbWorker.getConnection().createStatement();
         var rs = stmt.executeQuery(String.format(RETRIEVE_ALL_QUERY, tableName()));
 
         var result = new ArrayList<T>();
@@ -47,6 +55,28 @@ public abstract class BaseCrudDAO<T, U> {
         return result;
     }
 
+    public Page<T> getAll(int page, int size) {
+        var connection = dbWorker.getConnection();
+        try (var stmt = connection.createStatement()) {
+            var countRs = stmt.executeQuery(RETRIEVE_ALL_COUNT_QUERY.formatted(tableName()));
+            var count = countRs.getInt(1);
+            countRs.close();
+
+            var rs = stmt.executeQuery(RETRIEVE_ALL_WITH_PAGE_QUERY.formatted(tableName(), size, (page - 1) * size));
+
+            var result = new ArrayList<T>();
+            while (rs.next()) {
+                result.add(map(rs));
+            }
+            rs.close();
+            return new Page<T>(result, page, size, count);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            dbWorker.releaseConnection(connection);
+        }
+    }
+
     /**
      * Retrieves all entities that match the specified filter conditions.
      *
@@ -55,7 +85,7 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     public List<T> getAll(String filter) throws SQLException {
-        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        var stmt = dbWorker.getConnection().createStatement();
         var rs = stmt.executeQuery(String.format(RETRIEVE_WITH_FILTER_QUERY, tableName(), filter));
 
         var result = new ArrayList<T>();
@@ -65,6 +95,28 @@ public abstract class BaseCrudDAO<T, U> {
         rs.close();
         stmt.close();
         return result;
+    }
+
+    public Page<T> getAll(String filter, int page, int size) {
+        var connection = dbWorker.getConnection();
+        try (var stmt = connection.createStatement()) {
+            var countRs = stmt.executeQuery(RETRIEVE_COUNT_FILTER_QUERY.formatted(tableName(), filter));
+            var count = countRs.getInt(1);
+            countRs.close();
+
+            var rs = stmt.executeQuery(RETRIEVE_WITH_FILTER_PAGE_QUERY.formatted(tableName(), filter, size, (page - 1) * size));
+
+            var result = new ArrayList<T>();
+            while (rs.next()) {
+                result.add(map(rs));
+            }
+            rs.close();
+            return new Page<T>(result, page, size, count);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            dbWorker.releaseConnection(connection);
+        }
     }
 
     /**
@@ -86,7 +138,7 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     public boolean deleteById(U id) throws SQLException {
-        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        var stmt = dbWorker.getConnection().createStatement();
         stmt.execute(String.format(DELETE_BY_ID, tableName(), toIdFilter(id)));
 
         var result = stmt.getUpdateCount();
@@ -113,7 +165,7 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     public T insert(T entity) throws SQLException {
-        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        var stmt = dbWorker.getConnection().createStatement();
         stmt.execute(String.format(INSERT_QUERY, tableName(), toInsertColumns(), toInsertValue(entity)));
 
         var result = getById(toIdValue(stmt.getGeneratedKeys()));
@@ -121,9 +173,8 @@ public abstract class BaseCrudDAO<T, U> {
         return result;
     }
 
-
     public T update(T entity) throws SQLException {
-        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        var stmt = dbWorker.getConnection().createStatement();
         stmt.execute(String.format(UPDATE_QUERY, tableName(), toUpdateValue(entity), toIdFilter(getId(entity))));
 
         var result = getById(toIdValue(stmt.getGeneratedKeys()));
@@ -139,7 +190,7 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     public T getById(U id) throws SQLException {
-        var stmt = DBWorker.getInstance().getConnection().createStatement();
+        var stmt = dbWorker.getConnection().createStatement();
         var rs = stmt.executeQuery(String.format(RETRIEVE_WITH_FILTER_QUERY, tableName(), toIdFilter(id)));
 
         var res = map(rs);
@@ -203,7 +254,6 @@ public abstract class BaseCrudDAO<T, U> {
      * @throws SQLException if a database access error occurs
      */
     protected abstract U toIdValue(ResultSet resultSet) throws SQLException;
-
 
     protected abstract String toUpdateValue(T t);
 }

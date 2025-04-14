@@ -1,4 +1,4 @@
-package com.sofia.legal_system.viewmodels;
+package com.sofia.legal_system.viewmodels.orders;
 
 import javafx.beans.property.*;
 

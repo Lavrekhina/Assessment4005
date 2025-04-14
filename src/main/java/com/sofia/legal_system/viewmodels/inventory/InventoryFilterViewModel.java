@@ -1,21 +1,22 @@
-package com.sofia.legal_system.viewmodels;
+package com.sofia.legal_system.viewmodels.inventory;
 
-import java.time.format.DateTimeFormatter;
-import javafx.beans.property.SimpleIntegerProperty;
+import com.sofia.legal_system.viewmodels.BasePagingFilterViewModel;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class InventoryFilterViewModel {
-    private final SimpleIntegerProperty qMin = new SimpleIntegerProperty(0);
-    private final SimpleIntegerProperty qMax = new SimpleIntegerProperty(Integer.MAX_VALUE);
+public class InventoryFilterViewModel extends BasePagingFilterViewModel {
+
+    private final SimpleObjectProperty<Integer> qMin = new SimpleObjectProperty<Integer>(null);
+    private final SimpleObjectProperty<Integer> qMax = new SimpleObjectProperty<Integer>(null);
+
     private final SimpleStringProperty nameSearch = new SimpleStringProperty();
     private final SimpleStringProperty locationSearch = new SimpleStringProperty();
 
 
-    public SimpleIntegerProperty getqMin() {
+    public SimpleObjectProperty<Integer> getqMin() {
         return qMin;
     }
-
-    public SimpleIntegerProperty getqMax() {
+    public SimpleObjectProperty<Integer> getqMax() {
         return qMax;
     }
 
