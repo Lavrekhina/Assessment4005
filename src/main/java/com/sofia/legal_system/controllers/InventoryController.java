@@ -1,6 +1,7 @@
 package com.sofia.legal_system.controllers;
 
 import com.sofia.legal_system.DAO.InventoryDAO;
+import com.sofia.legal_system.model.KeyValuePair;
 import com.sofia.legal_system.service.impls.GUIService;
 import com.sofia.legal_system.viewmodels.inventory.InventoryFilterViewModel;
 import com.sofia.legal_system.viewmodels.inventory.InventoryViewModel;
@@ -37,6 +38,8 @@ public class InventoryController extends BasePagingController {
 
     private final InventoryFilterViewModel filterViewModel = new InventoryFilterViewModel();
     public ComboBox<Integer> pageSizeDropDown;
+    public ComboBox<KeyValuePair> sortFieldDD;
+    public ComboBox<KeyValuePair> sortOrderDD;
     public Pagination pagination;
 
     @FXML
@@ -66,6 +69,18 @@ public class InventoryController extends BasePagingController {
         qMaxField.textProperty().bindBidirectional(filterViewModel.getqMax(), new IntegerStringConverter());
         locationDropDown.setItems(FXCollections.observableArrayList("London", "Manchester"));
         filterViewModel.getLocationSearch().bind(locationDropDown.getSelectionModel().selectedItemProperty());
+        sortFieldDD.setItems(FXCollections.observableArrayList(
+                new KeyValuePair("ID", "item_id"), 
+                new KeyValuePair("Name", "item_name"),
+                new KeyValuePair("Quantity", "item_quantity"),
+                new KeyValuePair("Location", "item_location")
+                ));
+        
+        sortOrderDD.setItems(FXCollections.observableArrayList(
+                new KeyValuePair("Ascending", "asc"), 
+                new KeyValuePair("Descending", "desc")           
+                ));
+    
         initPaging(pagination, pageSizeDropDown, filterViewModel, p -> {
             refreshTable(null);
         });
@@ -142,5 +157,6 @@ public class InventoryController extends BasePagingController {
         filterViewModel.getNameSearch().set(null);
         filterViewModel.getqMin().set(null);
         filterViewModel.getqMax().set(null);
+        
     }
 }

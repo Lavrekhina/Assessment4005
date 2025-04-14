@@ -10,6 +10,8 @@ public class BasePagingFilterViewModel {
     private final SimpleIntegerProperty maxPageIndicator = new SimpleIntegerProperty(10);
     private final SimpleIntegerProperty totalPages = new SimpleIntegerProperty();
     private final ObservableList<Integer> sizes = FXCollections.observableArrayList(5, 10, 20, 50, 100);
+    private String sortField;
+    private String sortOrder;
 
 
     public SimpleIntegerProperty getPage() {
@@ -37,4 +39,18 @@ public class BasePagingFilterViewModel {
     }
 
     public record PagingEvent(int page, int size){}
+
+    /**
+     * @return the sortField
+     */
+    public String getSortField() {
+        return sortField;
+    }
+
+    /**
+     * @return the sortOrder
+     */
+    public String getSortOrder() {
+        return sortOrder;
+    }
 }
