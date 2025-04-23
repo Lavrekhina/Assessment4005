@@ -1,8 +1,8 @@
 package com.sofia.legal_system.controllers;
 
 import com.sofia.legal_system.DAO.OrderDAO;
+import com.sofia.legal_system.model.KeyValuePair;
 import com.sofia.legal_system.service.impls.GUIService;
-import com.sofia.legal_system.viewmodels.inventory.InventoryViewModel;
 import com.sofia.legal_system.viewmodels.orders.OrderViewModel;
 import com.sofia.legal_system.viewmodels.orders.OrdersFilterViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,14 +11,18 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 
 import javafx.scene.control.cell.PropertyValueFactory;
+import utils.Consts;
 
-public class OrdersController extends BasePagingController{
+public class OrdersController extends BasePagingController {
     public Button addBtn;
     public Button deleteBtn;
     public TableView<OrderViewModel> ordersTable;
@@ -31,10 +35,8 @@ public class OrdersController extends BasePagingController{
     public TextField customerNameSearchTextField;
     public DatePicker dateMinField;
     public DatePicker dateMaxField;
-    public ComboBox statusDropDown;
+    public ComboBox<String> statusDropDown;
     private final OrdersFilterViewModel filterViewModel = new OrdersFilterViewModel();
-    public ComboBox<Integer> pageSizeDropDown;
-    public Pagination pagination;
 
     @FXML
     public void initialize() {
@@ -57,26 +59,24 @@ public class OrdersController extends BasePagingController{
         editBtn.disableProperty().bind(ordersTable.getSelectionModel().selectedItemProperty().isNull());
         deleteBtn.disableProperty().bind(ordersTable.getSelectionModel().selectedItemProperty().isNull());
         loadingProgressBar.visibleProperty().bind(fetchingEntities);
-        customerNameSearchTextField.textProperty().bindBidirectional(filterViewModel.getcustomerNameSearch());
-        dateMinField.valueProperty().bindBidirectional(filterViewModel.getqMin());
-        dateMaxField.valueProperty().bindBidirectional(filterViewModel.getqMax());
+        customerNameSearchTextField.textProperty().bindBidirectional(filterViewModel.getCustomerNameSearch());
+        dateMinField.valueProperty().bindBidirectional(filterViewModel.getDMin());
+        dateMaxField.valueProperty().bindBidirectional(filterViewModel.getDMax());
 
-        statusDropDown.setItems(FXCollections.observableArrayList("Cancelled","Created", "Prepared","Ready for shipment"));
-        statusDropDown.getSelectionModel().selectedItemProperty().addListener((obs,oldValue, newValue)-> {
-            if(newValue !=null){
-            filterViewModel.getstatusSearch().setValue(newValue.toString());
-            return;
+        statusDropDown.setItems(FXCollections.observableArrayList(Consts.ORDER_STATUSES));
+        statusDropDown.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue != null) {
+                filterViewModel.getStatusSearch().setValue(newValue.toString());
+                return;
             }
-            filterViewModel.getstatusSearch().setValue(null);
-            
-        });
-        initPaging(pagination, pageSizeDropDown, filterViewModel, p -> {
-            refreshTable(null);
-        });
+            filterViewModel.getStatusSearch().setValue(null);
 
+        });
+        initPagingAndSorting(filterViewModel);
         refreshTable(null);
     }
 
+    @Override
     public void refreshTable(ActionEvent actionEvent) {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
@@ -98,12 +98,23 @@ public class OrdersController extends BasePagingController{
             });
         });
     }
+
+    @Override
+    protected List<KeyValuePair<String, String>> getProps() {
+        return List.of(KeyValuePair.of("ID", "order_id"),
+                KeyValuePair.of("Order date", "order_date"),
+                KeyValuePair.of("Customer name", "customer_name"),
+                KeyValuePair.of("Order status", "order_status"));
+    }
+
     public void openCreateDialog(ActionEvent actionEvent) {
         GUIService.showDialog("/dialogs/create-order.fxml");
     }
+
     public void editRow(ActionEvent actionEvent) {
-        GUIService.showDialog("/dialogs/create-order.fxml",  ordersTable.getSelectionModel().getSelectedItem());
+        GUIService.showDialog("/dialogs/create-order.fxml", ordersTable.getSelectionModel().getSelectedItem());
     }
+
     public void deleteRows(ActionEvent actionEvent) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation Dialog");
@@ -115,14 +126,17 @@ public class OrdersController extends BasePagingController{
             deleteSelected();
         }
     }
+
+    @Override
     public void deleteSelected() {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
             ordersTable.getSelectionModel().getSelectedItems().stream().map(OrderViewModel::getId).forEach(integer -> {
                 try {
                     ordersDAO.deleteById(integer);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                } catch (SQLException ex) {
+                    GUIService.showErrorAlert("Error deleting order", ex.getMessage());
+                    throw new RuntimeException(ex);
                 }
             });
             return true;
@@ -132,15 +146,15 @@ public class OrdersController extends BasePagingController{
         });
 
     }
-    
+
     public void filterEntities(ActionEvent actionEvent) {
         refreshTable(null);
     }
-    
-    public void clearFilter(ActionEvent actionEvent){
+
+    public void clearFilter(ActionEvent actionEvent) {
         statusDropDown.getSelectionModel().clearSelection();
-        filterViewModel.getcustomerNameSearch().set(null);
-        filterViewModel.getqMin().set(null);
-        filterViewModel.getqMax().set(null);
+        filterViewModel.getCustomerNameSearch().set(null);
+        filterViewModel.getDMin().set(null);
+        filterViewModel.getDMax().set(null);
     }
 }

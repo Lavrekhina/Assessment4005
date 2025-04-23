@@ -5,16 +5,15 @@
 package utils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
+import static utils.DateUtils.DATE_FORMAT;
 
 /**
  *
  * @author soflavre
  */
 public class ValidationUtils {
-    
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("YYYY-MM-dd");
-    
+
     public static boolean validRequiredString(String input){
         if (input == null){
         return false;

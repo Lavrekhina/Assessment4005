@@ -1,6 +1,7 @@
 package com.sofia.legal_system.viewmodels.shipments;
 
 import com.sofia.legal_system.viewmodels.BasePagingFilterViewModel;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -8,18 +9,18 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class ShipmentsFilterViewModel extends BasePagingFilterViewModel {
-    private final SimpleObjectProperty<LocalDate> dMin = new SimpleObjectProperty();
-    private final SimpleObjectProperty<LocalDate> dMax = new SimpleObjectProperty();
+    private final SimpleObjectProperty<LocalDate> dMin = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<LocalDate> dMax = new SimpleObjectProperty<>();
     private final SimpleStringProperty destination = new SimpleStringProperty();
     private final SimpleStringProperty statusSearch = new SimpleStringProperty();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
-    public SimpleObjectProperty getqMin() {
+    public SimpleObjectProperty<LocalDate> getDMin() {
         return dMin;
     }
 
-    public SimpleObjectProperty getqMax() {
+    public SimpleObjectProperty<LocalDate> getDMax() {
         return dMax;
     }
 
@@ -27,10 +28,11 @@ public class ShipmentsFilterViewModel extends BasePagingFilterViewModel {
         return destination;
     }
 
-    public SimpleStringProperty getstatusSearch() {
+    public SimpleStringProperty getStatusSearch() {
         return statusSearch;
     }
 
+    @Override
     public String toSqlFilter() {
         String query = "";
         if (destination.getValue() != null && !destination.getValue().isEmpty()) {

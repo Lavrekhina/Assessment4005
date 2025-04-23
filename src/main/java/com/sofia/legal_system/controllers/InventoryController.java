@@ -6,20 +6,20 @@ import com.sofia.legal_system.service.impls.GUIService;
 import com.sofia.legal_system.viewmodels.inventory.InventoryFilterViewModel;
 import com.sofia.legal_system.viewmodels.inventory.InventoryViewModel;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
 import javafx.collections.FXCollections;
 
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.converter.IntegerStringConverter;
+import utils.Consts;
 
 public class InventoryController extends BasePagingController {
     public Button addBtn;
@@ -37,10 +37,6 @@ public class InventoryController extends BasePagingController {
     public TextField qMaxField;
 
     private final InventoryFilterViewModel filterViewModel = new InventoryFilterViewModel();
-    public ComboBox<Integer> pageSizeDropDown;
-    public ComboBox<KeyValuePair> sortFieldDD;
-    public ComboBox<KeyValuePair> sortOrderDD;
-    public Pagination pagination;
 
     @FXML
     public void initialize() {
@@ -67,34 +63,21 @@ public class InventoryController extends BasePagingController {
         nameSearchTextField.textProperty().bindBidirectional(filterViewModel.getNameSearch());
         qMinField.textProperty().bindBidirectional(filterViewModel.getqMin(), new IntegerStringConverter());
         qMaxField.textProperty().bindBidirectional(filterViewModel.getqMax(), new IntegerStringConverter());
-        locationDropDown.setItems(FXCollections.observableArrayList("London", "Manchester"));
+        locationDropDown.setItems(FXCollections.observableArrayList(Consts.LOCATIONS));
         filterViewModel.getLocationSearch().bind(locationDropDown.getSelectionModel().selectedItemProperty());
-        sortFieldDD.setItems(FXCollections.observableArrayList(
-                new KeyValuePair("ID", "item_id"), 
-                new KeyValuePair("Name", "item_name"),
-                new KeyValuePair("Quantity", "item_quantity"),
-                new KeyValuePair("Location", "item_location")
-                ));
-        
-        sortOrderDD.setItems(FXCollections.observableArrayList(
-                new KeyValuePair("Ascending", "asc"), 
-                new KeyValuePair("Descending", "desc")           
-                ));
-    
-        initPaging(pagination, pageSizeDropDown, filterViewModel, p -> {
-            refreshTable(null);
-        });
 
+        initPagingAndSorting(filterViewModel);
         refreshTable(null);
     }
 
+    @Override
     public void refreshTable(ActionEvent actionEvent) {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
             String filter = filterViewModel.toSqlFilter();
             return filter.isEmpty()
-                    ? inventoryDAO.getAll(filterViewModel.getPage().get(), filterViewModel.getPageSize().get())
-                    : inventoryDAO.getAll(filter, filterViewModel.getPage().get(), filterViewModel.getPageSize().get());
+                    ? inventoryDAO.getAll(filterViewModel.getPage().get(), filterViewModel.getPageSize().get(), filterViewModel.toSort())
+                    : inventoryDAO.getAll(filter, filterViewModel.getPage().get(), filterViewModel.getPageSize().get(), filterViewModel.toSort());
         }).thenAccept(page -> {
             var inventoryViewModels = page.getContent()
                     .stream()
@@ -110,6 +93,14 @@ public class InventoryController extends BasePagingController {
         });
     }
 
+    @Override
+    protected List<KeyValuePair<String, String>> getProps() {
+        return List.of(KeyValuePair.of("ID", "item_id"),
+                KeyValuePair.of("Name", "item_name"),
+                KeyValuePair.of("Quantity", "item_quantity"),
+                KeyValuePair.of("Location", "item_location"));
+    }
+
     public void openCreateDialog(ActionEvent actionEvent) {
         GUIService.showDialog("/dialogs/create-inventory.fxml");
     }
@@ -118,26 +109,16 @@ public class InventoryController extends BasePagingController {
         GUIService.showDialog("/dialogs/create-inventory.fxml", inventoryTable.getSelectionModel().getSelectedItem());
     }
 
-    public void deleteRows(ActionEvent actionEvent) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("Delete item");
-        alert.setContentText("Are you ok with this?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            deleteSelected();
-        }
-    }
-
+    @Override
     public void deleteSelected() {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
             inventoryTable.getSelectionModel().getSelectedItems().stream().map(InventoryViewModel::getId).forEach(integer -> {
                 try {
                     inventoryDAO.deleteById(integer);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
+                } catch (SQLException ex) {
+                    GUIService.showErrorAlert("Error deleting inventory item", ex.getMessage());
+                    throw new RuntimeException(ex);
                 }
             });
             return true;
@@ -151,12 +132,12 @@ public class InventoryController extends BasePagingController {
     public void filterEntities(ActionEvent actionEvent) {
         refreshTable(null);
     }
-    
-    public void clearFilter(ActionEvent actionEvent){
+
+    public void clearFilter(ActionEvent actionEvent) {
         locationDropDown.getSelectionModel().clearSelection();
         filterViewModel.getNameSearch().set(null);
         filterViewModel.getqMin().set(null);
         filterViewModel.getqMax().set(null);
-        
+
     }
 }

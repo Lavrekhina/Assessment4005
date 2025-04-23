@@ -1,6 +1,7 @@
 package com.sofia.legal_system.controllers;
 
 import com.sofia.legal_system.DAO.ShipmentDAO;
+import com.sofia.legal_system.model.KeyValuePair;
 import com.sofia.legal_system.service.impls.GUIService;
 import com.sofia.legal_system.viewmodels.shipments.ShipmentViewModel;
 import com.sofia.legal_system.viewmodels.shipments.ShipmentsFilterViewModel;
@@ -10,13 +11,16 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
 import javafx.application.Platform;
 
 import javafx.collections.FXCollections;
 
 import javafx.scene.control.cell.PropertyValueFactory;
+import utils.Consts;
 
 public class ShipmentsController extends BasePagingController {
 
@@ -29,17 +33,14 @@ public class ShipmentsController extends BasePagingController {
     public Button refreshBtn;
     public Button editBtn;
     public ProgressBar loadingProgressBar;
-    public ComboBox destinationDropDown;
+    public ComboBox<String> destinationDropDown;
     public DatePicker dateMinField;
     public DatePicker dateMaxField;
-    public ComboBox shipmentStatusDropDown;
+    public ComboBox<String> shipmentStatusDropDown;
     private final ShipmentsFilterViewModel filterViewModel = new ShipmentsFilterViewModel();
-    public ComboBox<Integer> pageSizeDropDown;
-    public Pagination pagination;
 
     @FXML
     public void initialize() {
-
         TableColumn<ShipmentViewModel, String> dateColumn = new TableColumn<>("Date");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date"));
         TableColumn<ShipmentViewModel, String> destinationColumn = new TableColumn<>("Destination");
@@ -58,24 +59,22 @@ public class ShipmentsController extends BasePagingController {
         deleteBtn.disableProperty().bind(shipmentsTable.getSelectionModel().selectedItemProperty().isNull());
         loadingProgressBar.visibleProperty().bind(fetchingEntities);
 
-        dateMinField.valueProperty().bindBidirectional(filterViewModel.getqMin());
-        dateMaxField.valueProperty().bindBidirectional(filterViewModel.getqMax());
-        shipmentStatusDropDown.setItems(FXCollections.observableArrayList("Delivered", "Dispached", "In transit", "Canceled"));
+        dateMinField.valueProperty().bindBidirectional(filterViewModel.getDMin());
+        dateMaxField.valueProperty().bindBidirectional(filterViewModel.getDMax());
+        shipmentStatusDropDown.setItems(FXCollections.observableArrayList(Consts.SHIPMENT_STATUSES));
         shipmentStatusDropDown.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            filterViewModel.getstatusSearch().setValue(newValue==null?null:newValue.toString());
+            filterViewModel.getStatusSearch().setValue(newValue);
         });
-        destinationDropDown.setItems(FXCollections.observableArrayList("London", "Manchester"));
+        destinationDropDown.setItems(FXCollections.observableArrayList(Consts.LOCATIONS));
         destinationDropDown.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            filterViewModel.getDestinationSearch().setValue(newValue==null?null:newValue.toString());
+            filterViewModel.getDestinationSearch().setValue(newValue);
         });
 
-        initPaging(pagination, pageSizeDropDown, filterViewModel, p -> {
-            refreshTable(null);
-        });
-
+        initPagingAndSorting(filterViewModel);
         refreshTable(null);
     }
 
+    @Override
     public void refreshTable(ActionEvent actionEvent) {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
@@ -95,6 +94,14 @@ public class ShipmentsController extends BasePagingController {
         });
     }
 
+    @Override
+    protected List<KeyValuePair<String, String>> getProps() {
+        return List.of(KeyValuePair.of("ID", "shipment_id"),
+                KeyValuePair.of("Destination", "destination"),
+                KeyValuePair.of("Shipment Date", "shipment_date"),
+                KeyValuePair.of("Shipment status", "shipment_status"));
+    }
+
     public void openCreateDialog(ActionEvent actionEvent) {
         GUIService.showDialog("/dialogs/create-shipment.fxml");
     }
@@ -103,18 +110,7 @@ public class ShipmentsController extends BasePagingController {
         GUIService.showDialog("/dialogs/create-shipment.fxml", shipmentsTable.getSelectionModel().getSelectedItem());
     }
 
-    public void deleteRows(ActionEvent actionEvent) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("Delete item");
-        alert.setContentText("Are you ok with this?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            deleteSelected();
-        }
-    }
-
+    @Override
     public void deleteSelected() {
         fetchingEntities.set(true);
         CompletableFuture.supplyAsync(() -> {
@@ -122,6 +118,7 @@ public class ShipmentsController extends BasePagingController {
                 try {
                     shipmentDAO.deleteById(integer);
                 } catch (SQLException ex) {
+                    GUIService.showErrorAlert("Error deleting shipment", ex.getMessage());
                     throw new RuntimeException(ex);
                 }
             });
@@ -130,16 +127,16 @@ public class ShipmentsController extends BasePagingController {
             refreshTable(null);
             fetchingEntities.set(false);
         });
-
     }
 
     public void filterEntities(ActionEvent actionEvent) {
         refreshTable(null);
     }
-    public void clearFilter(ActionEvent actionEvent){
+
+    public void clearFilter(ActionEvent actionEvent) {
         shipmentStatusDropDown.getSelectionModel().clearSelection();
         destinationDropDown.getSelectionModel().clearSelection();
-        filterViewModel.getqMin().set(null);
-        filterViewModel.getqMax().set(null);
+        filterViewModel.getDMin().set(null);
+        filterViewModel.getDMax().set(null);
     }
 }

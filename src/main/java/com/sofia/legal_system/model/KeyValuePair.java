@@ -5,22 +5,21 @@
 package com.sofia.legal_system.model;
 
 /**
- *
  * @author soflavre
  */
 public class KeyValuePair<T, E> {
-    private T key;
-    private E value;
-    
+    private final T key;
+    private final E value;
+
 
     @Override
     public String toString() {
-       return getKey().toString();
+        return getKey().toString();
     }
-    
-    
-    public KeyValuePair(T key, E value){
-    
+
+
+    public KeyValuePair(T key, E value) {
+
         this.key = key;
         this.value = value;
     }
@@ -37,5 +36,9 @@ public class KeyValuePair<T, E> {
      */
     public E getValue() {
         return value;
+    }
+
+    public static <T, E> KeyValuePair<T, E> of(T key, E value) {
+        return new KeyValuePair<>(key, value);
     }
 }

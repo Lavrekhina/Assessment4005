@@ -92,7 +92,7 @@ public class DBWorker {
             }
         });
 
-        conn.close();
+        releaseConnection(conn);
     }
 
     public void clearDB() throws SQLException {
@@ -107,6 +107,8 @@ public class DBWorker {
         }
         dropStatement.close();
         dropRs.close();
+
+        releaseConnection(conn);
     }
 
     private void initialize() throws SQLException {
@@ -125,6 +127,7 @@ public class DBWorker {
                 throw new RuntimeException(e);
             }
         }
+        releaseConnection(conn);
     }
 
     private Properties loadProperties() {

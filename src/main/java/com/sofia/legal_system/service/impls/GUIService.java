@@ -9,10 +9,13 @@ import com.sofia.legal_system.controllers.dialogs.BaseDataDrivenController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.Optional;
 
 public class GUIService {
     private static Stage primaryStage;
@@ -31,8 +34,8 @@ public class GUIService {
             URL xmlUrl = Legal_system.class.getResource(name);
             loader.setLocation(xmlUrl);
             Parent root = loader.load();
-            
-            if(loader.getController() instanceof BaseDataDrivenController controller){
+
+            if (loader.getController() instanceof BaseDataDrivenController controller) {
                 controller.init();
             }
 
@@ -53,7 +56,7 @@ public class GUIService {
             URL xmlUrl = Legal_system.class.getResource(name);
             loader.setLocation(xmlUrl);
             Parent root = loader.load();
-            if(loader.getController() instanceof BaseDataDrivenController controller){
+            if (loader.getController() instanceof BaseDataDrivenController controller) {
                 controller.setData(data);
                 controller.init();
             }
@@ -67,5 +70,22 @@ public class GUIService {
             e.printStackTrace();
         }
 
+    }
+
+    public static Optional<ButtonType> showConfirmationAlert(String title, String message) {
+        return showAlert(Alert.AlertType.INFORMATION, title, message);
+    }
+
+    public static Optional<ButtonType> showErrorAlert(String title, String message) {
+        return showAlert(Alert.AlertType.ERROR, title, message);
+    }
+
+    private static Optional<ButtonType> showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        return alert.showAndWait();
     }
 }

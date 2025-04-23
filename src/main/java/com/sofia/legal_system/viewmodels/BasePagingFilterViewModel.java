@@ -1,15 +1,12 @@
 package com.sofia.legal_system.viewmodels;
 
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
-public class BasePagingFilterViewModel {
+public abstract class BasePagingFilterViewModel {
     private final SimpleIntegerProperty page = new SimpleIntegerProperty(1);
     private final SimpleIntegerProperty pageSize = new SimpleIntegerProperty(10);
     private final SimpleIntegerProperty maxPageIndicator = new SimpleIntegerProperty(10);
     private final SimpleIntegerProperty totalPages = new SimpleIntegerProperty();
-    private final ObservableList<Integer> sizes = FXCollections.observableArrayList(5, 10, 20, 50, 100);
     private String sortField;
     private String sortOrder;
 
@@ -30,27 +27,21 @@ public class BasePagingFilterViewModel {
         return totalPages;
     }
 
-    public ObservableList<Integer> getSizes() {
-        return sizes;
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
     }
 
-    protected String toSqlPage() {
-        return String.format("limit %s offset %s", pageSize.getValue(), (page.getValue() - 1) * pageSize.getValue());
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
     }
 
-    public record PagingEvent(int page, int size){}
+    public abstract String toSqlFilter();
 
-    /**
-     * @return the sortField
-     */
-    public String getSortField() {
-        return sortField;
-    }
+    public String toSort() {
+        if (sortField == null || sortOrder == null) {
+            return "";
+        }
 
-    /**
-     * @return the sortOrder
-     */
-    public String getSortOrder() {
-        return sortOrder;
+        return "order by " + sortField + " " + sortOrder;
     }
 }

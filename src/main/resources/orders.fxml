@@ -54,44 +54,65 @@
                 </HBox>
                 <TitledPane animated="false" text="Filter" GridPane.rowIndex="1">
                     <content>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <VBox>
                             <children>
-                                <VBox>
+                                <HBox alignment="CENTER_LEFT" spacing="10.0">
                                     <children>
-                                        <Label text="Customer Name" />
-                                        <TextField fx:id="customerNameSearchTextField" />
-                                    </children>
-                                </VBox>
-                                <VBox>
-                                    <children>
-                                        <Label text="Date" />
-                                        <HBox alignment="CENTER" spacing="5.0">
+                                        <VBox>
                                             <children>
-                                                <DatePicker fx:id="dateMinField" maxWidth="150.0" />
-                                                <Label text="-" />
-                                                <DatePicker fx:id="dateMaxField" maxWidth="150.0" />
+                                                <Label text="Customer Name" />
+                                                <TextField fx:id="customerNameSearchTextField" />
                                             </children>
-                                        </HBox>
+                                        </VBox>
+                                        <VBox>
+                                            <children>
+                                                <Label text="Date" />
+                                                <HBox alignment="CENTER" spacing="5.0">
+                                                    <children>
+                                                        <DatePicker fx:id="dateMinField" maxWidth="150.0" />
+                                                        <Label text="-" />
+                                                        <DatePicker fx:id="dateMaxField" maxWidth="150.0" />
+                                                    </children>
+                                                </HBox>
+                                            </children>
+                                        </VBox>
+                                        <VBox>
+                                            <children>
+                                                <Label text="Status" />
+                                                <ComboBox fx:id="statusDropDown" />
+                                            </children>
+                                        </VBox>
+                                        <Button mnemonicParsing="false" onAction="#clearFilter" text="Clear">
+                                            <HBox.margin>
+                                                <Insets top="15.0" />
+                                            </HBox.margin>
+                                        </Button>
+                                        <Button mnemonicParsing="false" onAction="#filterEntities" text="Filter">
+                                            <HBox.margin>
+                                                <Insets top="15.0" />
+                                            </HBox.margin>
+                                        </Button>
                                     </children>
-                                </VBox>
-                                <VBox>
+                                </HBox>
+                                <HBox spacing="10.0">
                                     <children>
-                                        <Label text="Status" />
-                                        <ComboBox fx:id="statusDropDown" />
+                                        <VBox>
+                                            <children>
+                                                <Label text="Sort Field"/>
+                                                <ComboBox fx:id="sortFieldDD" prefWidth="150.0"/>
+                                            </children>
+                                        </VBox>
+                                        <VBox layoutX="10.0" layoutY="10.0">
+                                            <children>
+                                                <Label text="Sort Order"/>
+                                                <ComboBox fx:id="sortOrderDD" prefWidth="150.0"/>
+                                            </children>
+                                        </VBox>
                                     </children>
-                                </VBox>
-                                <Button mnemonicParsing="false" onAction="#clearFilter" text="Clear">
-                             <HBox.margin>
-                                 <Insets top="15.0" />
-                             </HBox.margin>
-                         </Button>
-                                <Button mnemonicParsing="false" onAction="#filterEntities" text="Filter">
-                                    <HBox.margin>
-                                        <Insets top="15.0" />
-                                    </HBox.margin>
-                                </Button>
+                                </HBox>
                             </children>
-                        </HBox>
+                        </VBox>
+
                     </content>
                 </TitledPane>
                 <HBox alignment="CENTER_LEFT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">

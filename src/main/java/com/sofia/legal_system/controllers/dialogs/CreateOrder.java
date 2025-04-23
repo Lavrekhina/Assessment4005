@@ -6,10 +6,10 @@ package com.sofia.legal_system.controllers.dialogs;
 
 import com.sofia.legal_system.DAO.OrderDAO;
 import com.sofia.legal_system.model.Order;
+import com.sofia.legal_system.service.impls.GUIService;
 import com.sofia.legal_system.viewmodels.orders.OrderViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,10 +19,11 @@ import javafx.stage.Stage;
 import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 
+import utils.Consts;
+import utils.StringDateConverter;
 import utils.ValidationUtils;
 
 public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
@@ -33,56 +34,16 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
     public Label customerNameFieldError;
     public TextField customerNameField;
     public Label statusFieldError;
-    public ComboBox statusDropDown;
+    public ComboBox<String> statusDropDown;
     private OrderViewModel viewModel;
     private final SimpleBooleanProperty isValid = new SimpleBooleanProperty(false);
     private final OrderDAO orderDAO = new OrderDAO();
 
-    @FXML
-    public void initialize() {
-    }
-
-    public void cancel(ActionEvent actionEvent) {
-        Stage stage = (Stage) cancelBtn.getScene().getWindow();
-        stage.close();
-    }
-
-    public void save(ActionEvent actionEvent) {
-        try {
-            Order order = new Order(viewModel.getId(), viewModel.getDate(), viewModel.getCustomerName(), viewModel.getStatus());
-            if (viewModel.getId() != null) {
-                orderDAO.update(order);
-            } else {
-                orderDAO.insert(order);
-            }
-
-            Stage stage = (Stage) saveBtn.getScene().getWindow();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Order");
-            alert.setHeaderText(null);
-            alert.setContentText("Order for customer with name %s successfully added!".formatted(order.getCustomerName()));
-
-            alert.showAndWait();
-            stage.close();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private void isFullyValid() {
-        Boolean valid = ValidationUtils.validDate(viewModel.getDate())
-                && ValidationUtils.validRequiredString(viewModel.getCustomerName())
-                && ValidationUtils.validRequiredString(viewModel.getStatus());
-
-        isValid.setValue(valid);
-    }
 
     @Override
     public void init() {
         viewModel = data != null ? data : new OrderViewModel();
 
-        customerNameField.textProperty().bindBidirectional(viewModel.customerNameProperty());
 
         viewModel.dateProperty().addListener((observableValue, number, t1) -> {
             isFullyValid();
@@ -103,18 +64,45 @@ public class CreateOrder extends BaseDataDrivenController<OrderViewModel> {
 
         });
 
-        statusDropDown.setItems(FXCollections.observableArrayList("Created", "Prepared", "Ready for shipment"));
-        statusDropDown.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            viewModel.setStatus(statusDropDown.getSelectionModel().getSelectedItem().toString());
-        });
-
-        orderDatePicker.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-            viewModel.setDate(newValue.toString());
-        });
-
+        statusDropDown.setItems(FXCollections.observableArrayList(Consts.ORDER_STATUSES));
+        viewModel.statusProperty().bindBidirectional(statusDropDown.valueProperty());
+        viewModel.dateProperty().bindBidirectional(orderDatePicker.valueProperty(), new StringDateConverter());
+        viewModel.customerNameProperty().bindBidirectional(customerNameField.textProperty());
         saveBtn.disableProperty().bind(isValid.not());
         statusDropDown.getSelectionModel().selectFirst();
         isFullyValid();
     }
+
+    public void cancel(ActionEvent actionEvent) {
+        Stage stage = (Stage) cancelBtn.getScene().getWindow();
+        stage.close();
+    }
+
+    public void save(ActionEvent actionEvent) {
+        try {
+            Order order = new Order(viewModel.getId(), viewModel.getDate(), viewModel.getCustomerName(), viewModel.getStatus());
+            if (viewModel.getId() != null) {
+                orderDAO.update(order);
+            } else {
+                orderDAO.insert(order);
+            }
+
+            GUIService.showConfirmationAlert("Order", "Order for customer with name %s successfully saved!".formatted(order.getCustomerName()));
+            Stage stage = (Stage) saveBtn.getScene().getWindow();
+            stage.close();
+        } catch (SQLException e) {
+            GUIService.showErrorAlert("Order saving Error", e.getMessage());
+        }
+
+    }
+
+    private void isFullyValid() {
+        Boolean valid = ValidationUtils.validDate(viewModel.getDate())
+                && ValidationUtils.validRequiredString(viewModel.getCustomerName())
+                && ValidationUtils.validRequiredString(viewModel.getStatus());
+
+        isValid.setValue(valid);
+    }
+
 }
 

@@ -28,6 +28,7 @@ public class InventoryFilterViewModel extends BasePagingFilterViewModel {
         return locationSearch;
     }
 
+    @Override
     public String toSqlFilter() {
         String query = "";
         if (nameSearch.getValue() != null && !nameSearch.getValue().isEmpty()) {
