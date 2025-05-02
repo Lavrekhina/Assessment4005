@@ -27,7 +27,7 @@
             </VBox>
          </left>
          <center>
-            <StackPane fx:id="viewsStack" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <StackPane fx:id="viewsStack" prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: pink;" BorderPane.alignment="CENTER">
                <children>
                   <AnchorPane fx:id="inventoryNode">
                      <children>

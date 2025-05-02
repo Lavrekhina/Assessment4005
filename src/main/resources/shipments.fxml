@@ -5,9 +5,9 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -15,44 +15,39 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Pagination?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;"
-            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.sofia.legal_system.controllers.ShipmentsController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sofia.legal_system.controllers.ShipmentsController">
     <children>
-        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
-                  AnchorPane.topAnchor="0.0">
+        <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES"/>
-                <RowConstraints vgrow="NEVER"/>
-                <RowConstraints vgrow="ALWAYS"/>
-                <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES"/>
+                <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                <RowConstraints vgrow="NEVER" />
+                <RowConstraints vgrow="ALWAYS" />
+                <RowConstraints maxHeight="60.0" minHeight="60.0" prefHeight="60.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <VBox GridPane.rowIndex="2">
                     <children>
-                        <ProgressBar fx:id="loadingProgressBar" maxHeight="10.0" maxWidth="1.7976931348623157E308"
-                                     minHeight="10.0" prefHeight="10.0"/>
+                        <ProgressBar fx:id="loadingProgressBar" maxHeight="10.0" maxWidth="1.7976931348623157E308" minHeight="10.0" prefHeight="10.0" />
                         <TableView fx:id="shipmentsTable" VBox.vgrow="ALWAYS">
                             <columnResizePolicy>
-                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                             </columnResizePolicy>
                         </TableView>
                     </children>
                 </VBox>
-                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" style="-fx-background-color: pink;">
                     <children>
-                        <Button fx:id="addBtn" mnemonicParsing="false" onAction="#openCreateDialog" text="Add"/>
-                        <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshTable" text="Refresh"/>
-                        <Button fx:id="editBtn" mnemonicParsing="false" onAction="#editRow" text="Edit"/>
-                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteRows" text="Delete"/>
+                        <Button fx:id="addBtn" mnemonicParsing="false" onAction="#openCreateDialog" text="Add" />
+                        <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshTable" text="Refresh" />
+                        <Button fx:id="editBtn" mnemonicParsing="false" onAction="#editRow" text="Edit" />
+                        <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteRows" text="Delete" />
                     </children>
                     <padding>
-                        <Insets left="20.0" right="20.0"/>
+                        <Insets left="20.0" right="20.0" />
                     </padding>
                 </HBox>
                 <TitledPane animated="false" text="Filter" GridPane.rowIndex="1">
@@ -63,36 +58,36 @@
                                     <children>
                                         <VBox>
                                             <children>
-                                                <Label text="Destination"/>
-                                                <ComboBox fx:id="destinationDropDown"/>
+                                                <Label text="Destination" />
+                                                <ComboBox fx:id="destinationDropDown" />
                                             </children>
                                         </VBox>
                                         <VBox>
                                             <children>
-                                                <Label text="Shipment Date"/>
+                                                <Label text="Shipment Date" />
                                                 <HBox alignment="CENTER" spacing="5.0">
                                                     <children>
-                                                        <DatePicker fx:id="dateMinField" maxWidth="150.0"/>
-                                                        <Label text="-"/>
-                                                        <DatePicker fx:id="dateMaxField" maxWidth="150.0"/>
+                                                        <DatePicker fx:id="dateMinField" maxWidth="150.0" />
+                                                        <Label text="-" />
+                                                        <DatePicker fx:id="dateMaxField" maxWidth="150.0" />
                                                     </children>
                                                 </HBox>
                                             </children>
                                         </VBox>
                                         <VBox>
                                             <children>
-                                                <Label text="Shipment Status"/>
-                                                <ComboBox fx:id="shipmentStatusDropDown"/>
+                                                <Label text="Shipment Status" />
+                                                <ComboBox fx:id="shipmentStatusDropDown" />
                                             </children>
                                         </VBox>
                                         <Button mnemonicParsing="false" onAction="#clearFilter" text="Clear">
                                             <HBox.margin>
-                                                <Insets top="15.0"/>
+                                                <Insets top="15.0" />
                                             </HBox.margin>
                                         </Button>
                                         <Button mnemonicParsing="false" onAction="#filterEntities" text="Filter">
                                             <HBox.margin>
-                                                <Insets top="15.0"/>
+                                                <Insets top="15.0" />
                                             </HBox.margin>
                                         </Button>
                                     </children>
@@ -101,14 +96,14 @@
                                     <children>
                                         <VBox>
                                             <children>
-                                                <Label text="Sort Field"/>
-                                                <ComboBox fx:id="sortFieldDD" prefWidth="150.0"/>
+                                                <Label text="Sort Field" />
+                                                <ComboBox fx:id="sortFieldDD" prefWidth="150.0" />
                                             </children>
                                         </VBox>
                                         <VBox layoutX="10.0" layoutY="10.0">
                                             <children>
-                                                <Label text="Sort Order"/>
-                                                <ComboBox fx:id="sortOrderDD" prefWidth="150.0"/>
+                                                <Label text="Sort Order" />
+                                                <ComboBox fx:id="sortOrderDD" prefWidth="150.0" />
                                             </children>
                                         </VBox>
                                     </children>
@@ -117,22 +112,20 @@
                         </VBox>
                     </content>
                 </TitledPane>
-                <HBox alignment="CENTER_LEFT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3"
-                      GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
-                        <Insets bottom="10.0" top="10.0"/>
+                        <Insets bottom="10.0" top="10.0" />
                     </GridPane.margin>
                     <children>
-                        <ComboBox fx:id="pageSizeDropDown" prefWidth="150.0"/>
-                        <Pagination fx:id="pagination" maxHeight="1.7976931348623157E308"
-                                    maxWidth="1.7976931348623157E308" pageCount="5" HBox.hgrow="ALWAYS">
+                        <ComboBox fx:id="pageSizeDropDown" prefWidth="150.0" />
+                        <Pagination fx:id="pagination" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pageCount="5" HBox.hgrow="ALWAYS">
                             <HBox.margin>
-                                <Insets top="15.0"/>
+                                <Insets top="15.0" />
                             </HBox.margin>
                         </Pagination>
                     </children>
                     <padding>
-                        <Insets left="10.0" right="10.0"/>
+                        <Insets left="10.0" right="10.0" />
                     </padding>
                 </HBox>
             </children>

@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -15,8 +16,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Pagination?>
-
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sofia.legal_system.controllers.OrdersController">
     <children>
@@ -41,7 +40,7 @@
                         </TableView>
                     </children>
                 </VBox>
-                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" style="-fx-background-color: pink;">
                     <children>
                         <Button fx:id="addBtn" mnemonicParsing="false" onAction="#openCreateDialog" text="Add" />
                         <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshTable" text="Refresh" />
@@ -98,14 +97,14 @@
                                     <children>
                                         <VBox>
                                             <children>
-                                                <Label text="Sort Field"/>
-                                                <ComboBox fx:id="sortFieldDD" prefWidth="150.0"/>
+                                                <Label text="Sort Field" />
+                                                <ComboBox fx:id="sortFieldDD" prefWidth="150.0" />
                                             </children>
                                         </VBox>
                                         <VBox layoutX="10.0" layoutY="10.0">
                                             <children>
-                                                <Label text="Sort Order"/>
-                                                <ComboBox fx:id="sortOrderDD" prefWidth="150.0"/>
+                                                <Label text="Sort Order" />
+                                                <ComboBox fx:id="sortOrderDD" prefWidth="150.0" />
                                             </children>
                                         </VBox>
                                     </children>
